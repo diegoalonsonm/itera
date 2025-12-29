@@ -2,3 +2,5 @@ creds.txt
 habit-tracker-prototype.jsx
 .env
 todo.txt
+
+node_modules/
