@@ -94,17 +94,19 @@ npm run typecheck
 
 ### Database
 
-Apply schema:
+Apply schema and trigger (in order):
 ```bash
-# In Supabase SQL Editor, run:
+# 1. In Supabase SQL Editor, run:
 docs/schema.sql
-```
 
-Seed data (optional):
-```bash
-# In Supabase SQL Editor, run:
+# 2. Then run the trigger to auto-create user records:
+docs/trigger-create-user.sql
+
+# 3. Optionally, run seed data:
 docs/seed.sql
 ```
+
+**Important:** The trigger must be set up before testing auth endpoints, otherwise user records won't be created automatically.
 
 ## Environment Variables
 
@@ -127,15 +129,31 @@ EXPO_PUBLIC_API_URL=http://localhost:3000/api
 # EXPO_PUBLIC_API_URL=http://192.168.1.XXX:3000/api
 ```
 
+## Implemented API Endpoints
+
+### Health
+- `GET /api/health` - Basic health check
+- `GET /api/health/db` - Database connectivity check
+
+### Authentication
+- `POST /api/auth/signup` - Create new user account
+- `POST /api/auth/signin` - Sign in existing user
+- `POST /api/auth/signout` - Sign out (requires auth)
+- `POST /api/auth/refresh` - Refresh access token
+- `GET /api/auth/me` - Get current user profile (requires auth)
+
+See `docs/API_TESTING.md` for detailed testing examples.
+
 ## Key Implementation Details
 
 ### Authentication Flow
 
 1. User signs up/in via `/api/auth/signup` or `/api/auth/signin`
 2. API validates with Supabase Auth, returns `accessToken` and `refreshToken`
-3. Frontend stores tokens in expo-secure-store (mobile) or httpOnly cookies (web)
-4. All protected routes use `auth.middleware.ts` to verify JWT
-5. On 401, frontend attempts refresh via `/api/auth/refresh`
+3. Database trigger automatically creates user record in `public.users`
+4. Frontend stores tokens in expo-secure-store (mobile) or httpOnly cookies (web)
+5. All protected routes use `auth.middleware.ts` to verify JWT
+6. On 401, frontend attempts refresh via `/api/auth/refresh`
 
 ### Habit Completion Flow
 
