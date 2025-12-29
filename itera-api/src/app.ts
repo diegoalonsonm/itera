@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from './config/environment.js';
 import { requestLogger, errorHandler, notFoundHandler } from './middleware/index.js';
 import healthRoutes from './routes/health.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -41,6 +42,7 @@ export const createApp = (): Express => {
 
   // Routes
   app.use('/api/health', healthRoutes);
+  app.use('/api/auth', authRoutes);
 
   // 404 handler
   app.use(notFoundHandler);
