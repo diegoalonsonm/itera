@@ -5,6 +5,24 @@ export interface ApiResponse<T = any> {
   error?: ApiError;
 }
 
+// Pagination metadata
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+// Paginated response format
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: PaginationMeta;
+  error?: ApiError;
+}
+
 // Error structure
 export interface ApiError {
   code: string;
@@ -23,6 +41,35 @@ export class AppError extends Error {
     super(message);
     this.name = 'AppError';
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  // Factory methods for common errors
+  static badRequest(message: string, details?: any): AppError {
+    return new AppError(400, 'BAD_REQUEST', message, details);
+  }
+
+  static unauthorized(message = 'Unauthorized', details?: any): AppError {
+    return new AppError(401, 'UNAUTHORIZED', message, details);
+  }
+
+  static forbidden(message = 'Forbidden', details?: any): AppError {
+    return new AppError(403, 'FORBIDDEN', message, details);
+  }
+
+  static notFound(resource: string, details?: any): AppError {
+    return new AppError(404, 'NOT_FOUND', `${resource} not found`, details);
+  }
+
+  static conflict(message: string, details?: any): AppError {
+    return new AppError(409, 'CONFLICT', message, details);
+  }
+
+  static validation(message: string, details?: any): AppError {
+    return new AppError(400, 'VALIDATION_ERROR', message, details);
+  }
+
+  static internal(message = 'Internal server error', details?: any): AppError {
+    return new AppError(500, 'INTERNAL_SERVER_ERROR', message, details);
   }
 }
 
