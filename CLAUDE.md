@@ -156,6 +156,10 @@ EXPO_PUBLIC_API_URL=http://localhost:3000/api
 - `PATCH /api/habits/:id/activate` - Reactivate habit (requires auth)
 - `POST /api/habits/reorder` - Reorder multiple habits (requires auth)
 
+### Logs (Habit Tracking)
+- `GET /api/logs/today` - Get today's habits with completion status (requires auth)
+- `POST /api/logs/:habitId/toggle` - Toggle habit completion for today (requires auth)
+
 See `docs/API_TESTING.md` for detailed testing examples.
 
 ## Key Implementation Details

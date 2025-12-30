@@ -427,6 +427,139 @@ curl -X POST http://localhost:3000/api/habits/reorder \
 }
 ```
 
+## Log Endpoints
+
+All log endpoints require authentication (Bearer token).
+
+### 1. Get Today's Habits
+Retrieves all active habits with their completion status for today.
+
+```bash
+curl http://localhost:3000/api/logs/today \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "date": "2024-01-15",
+    "habits": [
+      {
+        "id": "uuid",
+        "name": "Morning Exercise",
+        "category": "obligatorio",
+        "frequency_type": "daily",
+        "icon": "dumbbell",
+        "color": "#10b981",
+        "display_order": 0,
+        "completed_today": true,
+        "log_id": "log-uuid",
+        "notes": null,
+        "completed_at": "2024-01-15T08:30:00Z"
+      },
+      {
+        "id": "uuid2",
+        "name": "Read 30 minutes",
+        "category": "ideal",
+        "frequency_type": "daily",
+        "icon": "book",
+        "color": "#3b82f6",
+        "display_order": 1,
+        "completed_today": false,
+        "log_id": null,
+        "notes": null,
+        "completed_at": null
+      }
+    ],
+    "summary": {
+      "total_habits": 2,
+      "completed": 1,
+      "obligatorios_total": 1,
+      "obligatorios_completed": 1,
+      "ideales_total": 1,
+      "ideales_completed": 0
+    }
+  }
+}
+```
+
+### 2. Toggle Habit Completion
+Marks a habit as completed or uncompleted for today.
+
+```bash
+curl -X POST http://localhost:3000/api/logs/HABIT_ID/toggle \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "completed": true,
+    "notes": "Felt great today!"
+  }'
+```
+
+**Request body:**
+- `completed` (boolean, required): Whether the habit is completed
+- `notes` (string, optional, max 500 chars): Optional notes about the completion
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "log": {
+      "id": "log-uuid",
+      "habit_id": "habit-uuid",
+      "user_id": "user-uuid",
+      "log_date": "2024-01-15",
+      "completed": true,
+      "notes": "Felt great today!",
+      "completed_at": "2024-01-15T14:30:00Z",
+      "created_at": "2024-01-15T14:30:00Z",
+      "updated_at": "2024-01-15T14:30:00Z"
+    },
+    "habit": {
+      "id": "habit-uuid",
+      "name": "Read 30 minutes",
+      "category": "ideal"
+    },
+    "points_earned": 1,
+    "completed_today": true
+  }
+}
+```
+
+**Points Logic:**
+- **Completing an "ideal" habit**: Earns +1 point (configurable via `points_per_ideal`)
+- **Uncompleting an "ideal" habit**: Removes the point that was earned
+- **"Obligatorio" habits**: Do not earn points directly (but affect streak)
+
+**Examples:**
+
+Mark habit as completed:
+```bash
+curl -X POST http://localhost:3000/api/logs/HABIT_ID/toggle \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"completed": true}'
+```
+
+Mark habit as uncompleted:
+```bash
+curl -X POST http://localhost:3000/api/logs/HABIT_ID/toggle \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"completed": false}'
+```
+
+With notes:
+```bash
+curl -X POST http://localhost:3000/api/logs/HABIT_ID/toggle \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"completed": true, "notes": "Great session today!"}'
+```
+
 ## Error Responses
 
 All errors follow this format:
