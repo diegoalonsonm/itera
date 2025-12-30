@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { z, type ZodSchema } from 'zod';
+import { z, ZodSchema } from 'zod';
 
 // Validation targets
 type ValidationTarget = 'body' | 'query' | 'params';
@@ -15,7 +15,22 @@ export const validate = (
       const validated = schema.parse(req[target]);
 
       // Replace with validated data (this ensures type safety and applies defaults)
-      req[target] = validated;
+      // Use type assertion for query and params as they are read-only in Express
+      if (target === 'body') {
+        req.body = validated;
+      } else if (target === 'query') {
+        for (const key in req.query) {
+          delete (req.query as any)[key]
+        }
+
+        Object.assign(req.query, validated)
+      } else if (target === 'params') {
+        for (const key in req.params) {
+          delete (req.params as any)[key]
+        }
+
+        Object.assign(req.params, validated)
+      }
 
       next();
     } catch (error) {
@@ -37,10 +52,10 @@ export const validateMultiple = (validations: {
         req.body = validations.body.parse(req.body);
       }
       if (validations.query) {
-        req.query = validations.query.parse(req.query);
+        (req as any).query = validations.query.parse(req.query);
       }
       if (validations.params) {
-        req.params = validations.params.parse(req.params);
+        (req as any).params = validations.params.parse(req.params);
       }
       next();
     } catch (error) {

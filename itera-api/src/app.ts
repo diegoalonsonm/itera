@@ -7,6 +7,7 @@ import { requestLogger, errorHandler, notFoundHandler } from './middleware/index
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import habitRoutes from './routes/habit.routes.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -45,6 +46,7 @@ export const createApp = (): Express => {
   app.use('/api/health', healthRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/users', userRoutes);
+  app.use('/api/habits', habitRoutes);
 
   // 404 handler
   app.use(notFoundHandler);

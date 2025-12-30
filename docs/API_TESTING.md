@@ -238,6 +238,195 @@ curl http://localhost:3000/api/users/me/stats \
 }
 ```
 
+## Habit Endpoints
+
+All habit endpoints require authentication (Bearer token).
+
+### 1. Get All Habits
+Retrieves all habits for the current user.
+
+```bash
+curl http://localhost:3000/api/habits \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Query Parameters:**
+- `status` (optional): Filter by status (`activo` or `inactivo`). Default: `activo`
+- `category` (optional): Filter by category (`obligatorio` or `ideal`)
+
+**Examples:**
+```bash
+# Get all active habits (default)
+curl http://localhost:3000/api/habits \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Get only obligatorio habits
+curl "http://localhost:3000/api/habits?category=obligatorio" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Get inactive habits
+curl "http://localhost:3000/api/habits?status=inactivo" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "habits": [
+      {
+        "id": "uuid",
+        "user_id": "uuid",
+        "name": "Morning Exercise",
+        "description": "30 minutes workout",
+        "category": "obligatorio",
+        "frequency_type": "daily",
+        "frequency_target": 1,
+        "frequency_days": null,
+        "icon": "dumbbell",
+        "color": "#10b981",
+        "display_order": 0,
+        "current_habit_streak": 5,
+        "best_habit_streak": 10,
+        "total_completions": 25,
+        "status": "activo",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "count": 1
+  }
+}
+```
+
+### 2. Get Single Habit
+Retrieves a specific habit by ID.
+
+```bash
+curl http://localhost:3000/api/habits/HABIT_ID \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 3. Create Habit
+Creates a new habit.
+
+```bash
+curl -X POST http://localhost:3000/api/habits \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Read for 30 minutes",
+    "description": "Read non-fiction books",
+    "category": "ideal",
+    "frequency_type": "daily",
+    "icon": "book",
+    "color": "#3b82f6"
+  }'
+```
+
+**Required fields:**
+- `name` (string, max 100 chars)
+- `category` (`"obligatorio"` or `"ideal"`)
+
+**Optional fields:**
+- `description` (string, max 500 chars)
+- `frequency_type` (`"daily"`, `"weekly"`, or `"custom"`) - default: `"daily"`
+- `frequency_target` (number 1-7, required for weekly habits)
+- `frequency_days` (array of days like `["mon", "wed", "fri"]`, required for custom)
+- `icon` (string, max 50 chars) - default: `"check"`
+- `color` (hex color like `"#10b981"`) - default: `"#10b981"`
+- `display_order` (number >= 0) - auto-assigned if not provided
+
+**Examples:**
+
+Daily habit:
+```json
+{
+  "name": "Meditate",
+  "category": "ideal",
+  "frequency_type": "daily"
+}
+```
+
+Weekly habit (3 times per week):
+```json
+{
+  "name": "Gym",
+  "category": "obligatorio",
+  "frequency_type": "weekly",
+  "frequency_target": 3
+}
+```
+
+Custom habit (specific days):
+```json
+{
+  "name": "Team Meeting",
+  "category": "obligatorio",
+  "frequency_type": "custom",
+  "frequency_days": ["mon", "wed", "fri"]
+}
+```
+
+### 4. Update Habit
+Updates an existing habit.
+
+```bash
+curl -X PATCH http://localhost:3000/api/habits/HABIT_ID \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Name",
+    "color": "#ef4444"
+  }'
+```
+
+All fields are optional. Only include the fields you want to update.
+
+### 5. Deactivate Habit
+Soft deletes a habit (sets status to `inactivo`).
+
+```bash
+curl -X DELETE http://localhost:3000/api/habits/HABIT_ID \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 6. Reactivate Habit
+Reactivates an inactive habit.
+
+```bash
+curl -X PATCH http://localhost:3000/api/habits/HABIT_ID/activate \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 7. Reorder Habits
+Updates the display order of multiple habits at once.
+
+```bash
+curl -X POST http://localhost:3000/api/habits/reorder \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "habits": [
+      { "id": "habit-1-uuid", "display_order": 0 },
+      { "id": "habit-2-uuid", "display_order": 1 },
+      { "id": "habit-3-uuid", "display_order": 2 }
+    ]
+  }'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Habits reordered successfully",
+    "updated": 3
+  }
+}
+```
+
 ## Error Responses
 
 All errors follow this format:

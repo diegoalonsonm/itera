@@ -147,6 +147,15 @@ EXPO_PUBLIC_API_URL=http://localhost:3000/api
 - `PATCH /api/users/me` - Update user profile/settings (requires auth)
 - `GET /api/users/me/stats` - Get user statistics (requires auth)
 
+### Habits
+- `GET /api/habits` - List all habits with optional filtering (requires auth)
+- `GET /api/habits/:id` - Get single habit (requires auth)
+- `POST /api/habits` - Create new habit (requires auth)
+- `PATCH /api/habits/:id` - Update habit (requires auth)
+- `DELETE /api/habits/:id` - Deactivate habit (requires auth)
+- `PATCH /api/habits/:id/activate` - Reactivate habit (requires auth)
+- `POST /api/habits/reorder` - Reorder multiple habits (requires auth)
+
 See `docs/API_TESTING.md` for detailed testing examples.
 
 ## Key Implementation Details
