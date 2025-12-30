@@ -160,6 +160,14 @@ EXPO_PUBLIC_API_URL=http://localhost:3000/api
 - `GET /api/logs/today` - Get today's habits with completion status (requires auth)
 - `POST /api/logs/:habitId/toggle` - Toggle habit completion for today (requires auth)
 
+### Stats (Analytics)
+- `GET /api/stats/dashboard` - Get dashboard overview with key metrics (requires auth)
+- `GET /api/stats/summaries` - Get daily summaries with date range filtering (requires auth)
+- `GET /api/stats/transactions` - Get point transaction history (requires auth)
+- `GET /api/stats/milestones` - Get achieved streak milestones (requires auth)
+- `GET /api/stats/habits` - Get habit completion statistics (requires auth)
+- `GET /api/stats/insights` - Get advanced analytics and patterns (requires auth)
+
 See `docs/API_TESTING.md` for detailed testing examples.
 
 ## Key Implementation Details

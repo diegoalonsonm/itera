@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import habitRoutes from './routes/habit.routes.js';
 import logRoutes from './routes/log.routes.js';
+import statsRoutes from './routes/stats.routes.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -49,6 +50,7 @@ export const createApp = (): Express => {
   app.use('/api/users', userRoutes);
   app.use('/api/habits', habitRoutes);
   app.use('/api/logs', logRoutes);
+  app.use('/api/stats', statsRoutes);
 
   // 404 handler
   app.use(notFoundHandler);

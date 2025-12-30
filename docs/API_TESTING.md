@@ -560,6 +560,250 @@ curl -X POST http://localhost:3000/api/logs/HABIT_ID/toggle \
   -d '{"completed": true, "notes": "Great session today!"}'
 ```
 
+## Stats Endpoints
+
+All stats endpoints require authentication (Bearer token).
+
+### 1. Get Dashboard Overview
+Get a comprehensive overview of user stats, today's progress, and recent activity.
+
+```bash
+curl http://localhost:3000/api/stats/dashboard \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user_stats": {
+      "current_streak": 5,
+      "best_streak": 10,
+      "total_points": 25,
+      "lifetime_points": 100,
+      "saves_used": 2
+    },
+    "today": {
+      "summary_date": "2024-01-15",
+      "obligatorios_completed": 2,
+      "obligatorios_total": 3,
+      "ideales_completed": 1,
+      "ideales_total": 2,
+      "day_status": "pending"
+    },
+    "active_habits": 5,
+    "recent_milestones": [...],
+    "week_summaries": [...]
+  }
+}
+```
+
+### 2. Get Daily Summaries
+Retrieve historical daily summaries.
+
+```bash
+curl http://localhost:3000/api/stats/summaries \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Query Parameters:**
+- `start_date` (optional): Filter from date (YYYY-MM-DD)
+- `end_date` (optional): Filter to date (YYYY-MM-DD)
+- `limit` (optional): Max results (1-365), default: 30
+
+**Examples:**
+```bash
+# Last 30 days (default)
+curl http://localhost:3000/api/stats/summaries \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Specific date range
+curl "http://localhost:3000/api/stats/summaries?start_date=2024-01-01&end_date=2024-01-31" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Last 7 days
+curl "http://localhost:3000/api/stats/summaries?limit=7" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 3. Get Point Transactions
+Retrieve point transaction history.
+
+```bash
+curl http://localhost:3000/api/stats/transactions \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Query Parameters:**
+- `transaction_type` (optional): Filter by type (`ideal_completed`, `period_bonus`, `streak_milestone`, `streak_save`, `manual_adjustment`)
+- `start_date` (optional): Filter from date (YYYY-MM-DD)
+- `end_date` (optional): Filter to date (YYYY-MM-DD)
+- `limit` (optional): Max results (1-100), default: 50
+
+**Examples:**
+```bash
+# Last 50 transactions (default)
+curl http://localhost:3000/api/stats/transactions \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Only ideal completions
+curl "http://localhost:3000/api/stats/transactions?transaction_type=ideal_completed" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# This month's transactions
+curl "http://localhost:3000/api/stats/transactions?start_date=2024-01-01&limit=100" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transactions": [...],
+    "count": 25,
+    "summary": {
+      "total_earned": 30,
+      "total_spent": 5,
+      "net": 25
+    }
+  }
+}
+```
+
+### 4. Get Streak Milestones
+Retrieve all achieved streak milestones.
+
+```bash
+curl http://localhost:3000/api/stats/milestones \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "milestones": [
+      {
+        "id": "uuid",
+        "milestone_days": 30,
+        "bonus_points": 10,
+        "achieved_at": "2024-01-15T00:00:00Z"
+      }
+    ],
+    "count": 3,
+    "total_bonus_points": 25
+  }
+}
+```
+
+### 5. Get Habit Statistics
+Get completion statistics for habits.
+
+```bash
+curl http://localhost:3000/api/stats/habits \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Query Parameters:**
+- `habit_id` (optional): Get stats for specific habit
+- `days` (optional): Number of days to analyze (1-365), default: 30
+
+**Examples:**
+
+All habits stats (last 30 days):
+```bash
+curl http://localhost:3000/api/stats/habits \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+Specific habit stats:
+```bash
+curl "http://localhost:3000/api/stats/habits?habit_id=HABIT_ID&days=90" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response (all habits):**
+```json
+{
+  "success": true,
+  "data": {
+    "days_analyzed": 30,
+    "habits": [
+      {
+        "habit_id": "uuid",
+        "habit_name": "Morning Exercise",
+        "category": "obligatorio",
+        "completed_count": 25,
+        "completion_rate": 83.33,
+        "current_streak": 5,
+        "best_streak": 10,
+        "total_completions": 100
+      }
+    ],
+    "count": 5
+  }
+}
+```
+
+**Response (single habit):**
+```json
+{
+  "success": true,
+  "data": {
+    "habit": {...},
+    "stats": {
+      "days_analyzed": 90,
+      "completed_count": 75,
+      "completion_rate": 83.33,
+      "current_streak": 5,
+      "best_streak": 15,
+      "total_completions": 200
+    },
+    "logs": [...]
+  }
+}
+```
+
+### 6. Get Insights
+Get advanced analytics and patterns.
+
+```bash
+curl http://localhost:3000/api/stats/insights \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "period": {
+      "days": 30,
+      "start_date": "2023-12-16",
+      "end_date": "2024-01-15"
+    },
+    "completion": {
+      "complete_days": 22,
+      "saved_days": 3,
+      "failed_days": 5,
+      "completion_rate": 73.33,
+      "save_rate": 10.0
+    },
+    "averages": {
+      "obligatorios_per_day": 2.5,
+      "ideales_per_day": 1.8
+    },
+    "patterns": {
+      "best_day_of_week": "Monday",
+      "best_day_rate": 90.0
+    }
+  }
+}
+```
+
 ## Error Responses
 
 All errors follow this format:
