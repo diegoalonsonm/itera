@@ -6,6 +6,7 @@ import { config } from './config/environment.js';
 import { requestLogger, errorHandler, notFoundHandler } from './middleware/index.js';
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -43,6 +44,7 @@ export const createApp = (): Express => {
   // Routes
   app.use('/api/health', healthRoutes);
   app.use('/api/auth', authRoutes);
+  app.use('/api/users', userRoutes);
 
   // 404 handler
   app.use(notFoundHandler);

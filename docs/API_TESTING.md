@@ -139,6 +139,105 @@ curl -X POST http://localhost:3000/api/auth/signout \
 }
 ```
 
+## User Endpoints
+
+All user endpoints require authentication (Bearer token).
+
+### 1. Get Current User Profile
+Retrieves the full user profile including all settings.
+
+```bash
+curl http://localhost:3000/api/users/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid",
+      "email": "test@example.com",
+      "name": "Test User",
+      "avatar_url": null,
+      "timezone": "America/Costa_Rica",
+      "subscription_tier": "free",
+      "current_streak": 0,
+      "best_streak": 0,
+      "total_points": 0,
+      "lifetime_points": 0,
+      "saves_used": 0,
+      "streak_save_cost": 5,
+      "points_per_ideal": 1,
+      "points_per_period": 2,
+      "auto_save_enabled": true,
+      "notifications_enabled": true,
+      "morning_reminder_time": "08:00:00",
+      "evening_reminder_time": "19:00:00",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+### 2. Update User Profile
+Updates user profile and/or settings.
+
+```bash
+curl -X PATCH http://localhost:3000/api/users/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Name",
+    "timezone": "America/New_York",
+    "auto_save_enabled": false,
+    "notifications_enabled": true,
+    "morning_reminder_time": "07:00:00"
+  }'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": { ... }
+  }
+}
+```
+
+**Updateable fields:**
+- Profile: `name`, `avatar_url`, `timezone`
+- Notifications: `notifications_enabled`, `morning_reminder_time`, `evening_reminder_time`
+- Settings: `auto_save_enabled`
+- Points config: `streak_save_cost`, `points_per_ideal`, `points_per_period`
+
+### 3. Get User Statistics
+Retrieves just the statistics (streaks and points).
+
+```bash
+curl http://localhost:3000/api/users/me/stats \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "stats": {
+      "current_streak": 5,
+      "best_streak": 10,
+      "total_points": 25,
+      "lifetime_points": 100,
+      "saves_used": 2
+    }
+  }
+}
+```
+
 ## Error Responses
 
 All errors follow this format:

@@ -142,6 +142,11 @@ EXPO_PUBLIC_API_URL=http://localhost:3000/api
 - `POST /api/auth/refresh` - Refresh access token
 - `GET /api/auth/me` - Get current user profile (requires auth)
 
+### Users
+- `GET /api/users/me` - Get full user profile (requires auth)
+- `PATCH /api/users/me` - Update user profile/settings (requires auth)
+- `GET /api/users/me/stats` - Get user statistics (requires auth)
+
 See `docs/API_TESTING.md` for detailed testing examples.
 
 ## Key Implementation Details
